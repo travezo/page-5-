@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — InstaSeller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070C;
+  --surface:#0F0F18;
+  --surface2:#161622;
+  --surface3:#1C1C2A;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.12);
+  --teal:#00C896;
+  --teal-dim:rgba(0,200,150,0.10);
+  --teal-mid:rgba(0,200,150,0.18);
+  --indigo:#5B5BD6;
+  --indigo-dim:rgba(91,91,214,0.12);
+  --text:#F0F0F5;
+  --text2:#8A8A9A;
+  --text3:#44445A;
+  --pending:#F59E0B;
+  --danger:#EF4444;
+  --confirmed:#3B82F6;
+  --sidebar-w:240px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{height:100%;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+
+/* ══════════════════════════════
+   SIDEBAR
+══════════════════════════════ */
+.sidebar{
+  width:var(--sidebar-w);
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  position:fixed;top:0;left:0;height:100vh;
+  display:flex;flex-direction:column;z-index:60;
+  transition:transform .3s;
+}
+.sidebar-logo{
+  padding:22px 20px 14px;
+  display:flex;align-items:center;gap:9px;
+  font-weight:800;font-size:17px;cursor:pointer;
+  border-bottom:1px solid var(--border);
+}
+.logo-icon{
+  width:32px;height:32px;background:var(--teal);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;
+}
+.sidebar-nav{
+  flex:1;padding:12px 10px;
+  display:flex;flex-direction:column;gap:2px;
+  overflow-y:auto;
+}
+.nav-section-label{
+  font-size:10px;font-weight:600;color:var(--text3);
+  letter-spacing:1px;text-transform:uppercase;
+  padding:10px 12px 6px;margin-top:4px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:10px;
+  cursor:pointer;transition:all .18s;
+  font-size:14px;font-weight:500;color:var(--text2);
+  border:none;background:none;width:100%;text-align:left;
+  font-family:'DM Sans',sans-serif;
+  position:relative;
+}
+.nav-item:hover{color:var(--text);background:var(--surface2);}
+.nav-item.active{
+  color:var(--teal);
+  background:var(--teal-dim);
+  font-weight:600;
+  border-left:3px solid var(--teal);
+  padding-left:9px;
+}
+.nav-item .ni-icon{font-size:17px;width:22px;text-align:center;flex-shrink:0;}
+.nav-badge{
+  margin-left:auto;background:var(--danger);color:#fff;
+  border-radius:999px;font-size:10px;font-weight:700;
+  padding:1px 7px;min-width:18px;text-align:center;
+}
+.nav-badge-teal{background:var(--teal-dim);color:var(--teal);}
+.sidebar-bottom{
+  padding:14px;border-top:1px solid var(--border);
+}
+.user-pill{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:12px;
+  background:var(--surface2);cursor:pointer;
+  transition:all .18s;
+}
+.user-pill:hover{background:var(--surface3);}
+.user-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal),var(--indigo));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:14px;color:#07070C;flex-shrink:0;
+}
+.user-info{flex:1;min-width:0;}
+.user-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tier-badge{
+  background:rgba(245,158,11,.12);color:var(--pending);
+  font-size:10px;font-weight:700;padding:1px 7px;
+  border-radius:999px;display:inline-block;margin-top:2px;
+}
+.user-chevron{color:var(--text3);}
+
+/* ══════════════════════════════
+   MAIN AREA
+══════════════════════════════ */
+.main-wrap{
+  margin-left:var(--sidebar-w);
+  flex:1;min-height:100vh;
+  display:flex;flex-direction:column;
+}
+
+/* TOP BAR */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  height:60px;padding:0 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(7,7,12,.9);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.topbar-left{display:flex;align-items:center;gap:14px;}
+.hamburger{
+  display:none;background:none;border:none;
+  color:var(--text2);cursor:pointer;padding:4px;
+}
+.topbar-greeting{font-size:16px;font-weight:700;}
+.topbar-greeting span{color:var(--teal);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.notif-btn{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .18s;position:relative;font-size:16px;
+}
+.notif-btn:hover{border-color:var(--teal);}
+.notif-dot{
+  position:absolute;top:8px;right:8px;
+  width:7px;height:7px;background:var(--danger);
+  border-radius:50%;border:1.5px solid var(--bg);
+}
+.topbar-search{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:8px 14px;
+  font-size:13px;color:var(--text2);cursor:pointer;
+  transition:all .18s;
+}
+.topbar-search:hover{border-color:var(--border2);}
+
+/* CONTENT */
+.dash-content{padding:28px 32px 60px;flex:1;}
+
+/* ── KYC BANNER ── */
+.kyc-banner{
+  background:rgba(245,158,11,.07);
+  border:1px solid rgba(245,158,11,.18);
+  border-left:3px solid var(--pending);
+  border-radius:12px;padding:12px 18px;
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:22px;font-size:14px;
+  cursor:pointer;transition:all .18s;
+}
+.kyc-banner:hover{background:rgba(245,158,11,.1);}
+.kyc-icon{font-size:16px;flex-shrink:0;}
+.kyc-text{flex:1;font-weight:500;}
+.kyc-text strong{color:var(--pending);}
+.kyc-text span{color:var(--text2);font-size:13px;}
+.kyc-cta{
+  font-size:13px;font-weight:700;color:var(--pending);
+  white-space:nowrap;display:flex;align-items:center;gap:4px;
+}
+
+/* ── WALLET CARD ── */
+.wallet-card{
+  background:linear-gradient(135deg,#00C896 0%,#00A87A 50%,#007F5F 100%);
+  border-radius:22px;padding:30px 32px 26px;
+  margin-bottom:22px;position:relative;overflow:hidden;
+}
+.wallet-card::before{
+  content:'';position:absolute;
+  top:-60px;right:-60px;width:240px;height:240px;
+  background:rgba(255,255,255,.09);border-radius:50%;
+}
+.wallet-card::after{
+  content:'';position:absolute;
+  bottom:-80px;left:25%;width:200px;height:200px;
+  background:rgba(255,255,255,.05);border-radius:50%;
+}
+.wallet-inner{position:relative;z-index:1;}
+.wallet-top-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;}
+.wallet-label{font-size:12px;font-weight:600;color:rgba(7,7,12,.55);text-transform:uppercase;letter-spacing:.6px;}
+.wallet-context-menu{
+  background:rgba(7,7,12,.12);border:none;border-radius:8px;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:rgba(7,7,12,.5);font-size:16px;
+  transition:all .18s;
+}
+.wallet-context-menu:hover{background:rgba(7,7,12,.2);}
+.wallet-amount{
+  font-size:48px;font-weight:900;color:#07070C;
+  letter-spacing:-2px;line-height:1.1;
+  margin-bottom:20px;
+  font-feature-settings:"tnum";
+}
+.wallet-chips-row{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap;}
+.wallet-chip{
+  background:rgba(7,7,12,.14);border-radius:10px;
+  padding:8px 14px;
+}
+.wallet-chip-label{font-size:10px;font-weight:600;color:rgba(7,7,12,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.wallet-chip-val{font-size:15px;font-weight:800;color:#07070C;}
+.wallet-btns{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.w-btn-solid{
+  background:#07070C;color:var(--teal);border:none;
+  padding:11px 22px;border-radius:999px;
+  font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;
+}
+.w-btn-solid:hover{background:#131320;}
+.w-btn-outline{
+  background:transparent;color:#07070C;
+  border:1.5px solid rgba(7,7,12,.3);
+  padding:11px 22px;border-radius:999px;
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;
+}
+.w-btn-outline:hover{background:rgba(7,7,12,.08);}
+.wallet-progress-section{}
+.wp-label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.wp-label{font-size:12px;font-weight:600;color:rgba(7,7,12,.6);}
+.wp-tier{font-size:12px;font-weight:700;color:rgba(7,7,12,.7);}
+.wp-bar-track{background:rgba(7,7,12,.15);border-radius:999px;height:6px;}
+.wp-bar-fill{background:#07070C;border-radius:999px;height:6px;width:0;transition:width 1.2s cubic-bezier(.22,1,.36,1);}
+
+/* ── QUICK STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:18px 20px;
+  transition:all .18s;cursor:default;
+}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-1px);}
+.stat-icon{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;margin-bottom:12px;
+}
+.stat-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.stat-value{font-size:22px;font-weight:800;font-feature-settings:"tnum";}
+.stat-sub{font-size:11px;color:var(--text2);margin-top:4px;display:flex;align-items:center;gap:4px;}
+.stat-up{color:var(--teal);}
+.stat-down{color:var(--danger);}
+
+/* ── CASHBACK INFO CHIP ── */
+.flow-chip{
+  background:rgba(59,130,246,.07);
+  border:1px solid rgba(59,130,246,.15);
+  border-radius:10px;padding:10px 16px;
+  font-size:13px;color:#93C5FD;
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:22px;flex-wrap:wrap;
+}
+.flow-chip .flow-arrow{color:rgba(147,197,253,.5);}
+
+/* ── ACTIVITY TABLE ── */
+.section-wrap{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:22px;}
+.section-head-row{
+  padding:18px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.section-head-title{font-size:15px;font-weight:700;}
+.view-all-link{
+  font-size:13px;color:var(--teal);cursor:pointer;font-weight:600;
+  display:flex;align-items:center;gap:4px;transition:gap .18s;
+}
+.view-all-link:hover{gap:7px;}
+table.act-table{width:100%;border-collapse:collapse;}
+table.act-table th{
+  padding:10px 24px;text-align:left;
+  font-size:11px;font-weight:600;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.6px;
+  border-bottom:1px solid var(--border);
+}
+table.act-table td{
+  padding:14px 24px;font-size:14px;
+  border-bottom:1px solid rgba(255,255,255,.03);
+  vertical-align:middle;
+}
+table.act-table tr:last-child td{border-bottom:none;}
+table.act-table tbody tr{transition:background .15s;cursor:pointer;}
+table.act-table tbody tr:hover td{background:rgba(255,255,255,.02);}
+.td-brand-cell{display:flex;align-items:center;gap:11px;}
+.brand-icon{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;flex-shrink:0;border:1px solid var(--border);
+}
+.brand-cell-info{}
+.brand-cell-name{font-size:14px;font-weight:600;}
+.brand-cell-sub{font-size:12px;color:var(--text2);margin-top:1px;}
+.td-amount{font-size:15px;font-weight:700;font-family:'DM Mono',monospace;}
+.td-amount.pos{color:var(--teal);}
+.td-amount.pend{color:var(--pending);}
+.td-date{font-size:13px;color:var(--text2);}
+
+/* STATUS PILLS */
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.3px;}
+.pill-pending{background:rgba(245,158,11,.12);color:var(--pending);animation:pulse-pill 2.2s infinite;}
+.pill-confirmed{background:rgba(59,130,246,.12);color:var(--confirmed);}
+.pill-credited{background:rgba(0,200,150,.12);color:var(--teal);}
+.pill-cancelled{background:rgba(239,68,68,.12);color:var(--danger);}
+@keyframes pulse-pill{0%,100%{opacity:1;}50%{opacity:.55;}}
+
+/* ── TWO-COL BOTTOM ── */
+.bottom-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:18px;margin-bottom:22px;}
+
+/* ── QUICK ACTIONS ── */
+.quick-actions{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;}
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+.qa-btn{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:14px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  cursor:pointer;transition:all .18s;text-align:center;
+}
+.qa-btn:hover{border-color:var(--teal);background:var(--teal-dim);}
+.qa-btn:hover .qa-icon{transform:scale(1.15);}
+.qa-icon{font-size:22px;transition:transform .18s;}
+.qa-label{font-size:12px;font-weight:600;color:var(--text2);}
+.qa-btn:hover .qa-label{color:var(--teal);}
+
+/* ── TOP CASHBACK TODAY ── */
+.top-cb-section{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
+.top-cb-scroll{display:flex;gap:12px;padding:0 22px 20px;overflow-x:auto;scrollbar-width:none;}
+.top-cb-scroll::-webkit-scrollbar{display:none;}
+.cb-mini-card{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:14px;padding:16px;min-width:150px;flex-shrink:0;
+  cursor:pointer;transition:all .2s;
+}
+.cb-mini-card:hover{border-color:rgba(0,200,150,.3);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,200,150,.1);}
+.cb-mini-logo{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:800;margin-bottom:10px;
+}
+.cb-mini-brand{font-size:13px;font-weight:600;margin-bottom:2px;}
+.cb-mini-rate{font-size:12px;color:var(--teal);font-weight:700;margin-bottom:10px;}
+.cb-mini-btn{
+  width:100%;background:var(--surface);border:1px solid var(--border);
+  border-radius:999px;padding:6px;
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;
+  color:var(--text2);cursor:pointer;transition:all .18s;
+}
+.cb-mini-btn:hover{background:var(--teal);color:#07070C;border-color:var(--teal);}
+
+/* ── NOTIFICATION PANEL ── */
+.notif-panel{
+  position:fixed;top:65px;right:20px;z-index:200;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;width:320px;
+  box-shadow:0 16px 48px rgba(0,0,0,.5);
+  opacity:0;pointer-events:none;transform:translateY(-8px) scale(.97);
+  transition:all .22s;
+}
+.notif-panel.show{opacity:1;pointer-events:all;transform:translateY(0) scale(1);}
+.notif-head{padding:16px 18px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.notif-head-title{font-size:14px;font-weight:700;}
+.notif-mark-read{font-size:12px;color:var(--teal);cursor:pointer;font-weight:500;}
+.notif-item{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;gap:10px;cursor:pointer;transition:background .15s;}
+.notif-item:hover{background:var(--surface2);}
+.notif-item.unread{background:rgba(0,200,150,.03);}
+.notif-item:last-child{border-bottom:none;}
+.notif-dot-ind{width:7px;height:7px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:5px;}
+.notif-dot-ind.read{background:transparent;}
+.notif-text{font-size:13px;line-height:1.5;}
+.notif-time{font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* ── WITHDRAWAL MODAL ── */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-backdrop.show{opacity:1;pointer-events:all;}
+.modal-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:22px;padding:32px;max-width:440px;width:100%;
+  transform:scale(.94);transition:transform .25s;
+}
+.modal-backdrop.show .modal-box{transform:scale(1);}
+.modal-title{font-size:20px;font-weight:800;margin-bottom:6px;}
+.modal-sub{font-size:14px;color:var(--text2);margin-bottom:24px;}
+.step-indicator{display:flex;gap:6px;margin-bottom:24px;}
+.step-dot{flex:1;height:4px;border-radius:999px;background:var(--surface2);}
+.step-dot.active{background:var(--teal);}
+.step-dot.done{background:rgba(0,200,150,.4);}
+.method-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.method-card{
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:13px;padding:14px 16px;
+  display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:all .18s;
+}
+.method-card:hover{border-color:var(--teal);}
+.method-card.selected{border-color:var(--teal);background:var(--teal-dim);}
+.method-card-icon{font-size:22px;width:36px;text-align:center;flex-shrink:0;}
+.method-card-info{flex:1;}
+.method-card-name{font-size:14px;font-weight:600;}
+.method-card-sub{font-size:12px;color:var(--text2);}
+.method-rec{
+  background:rgba(0,200,150,.1);color:var(--teal);
+  border-radius:999px;font-size:10px;font-weight:700;
+  padding:2px 8px;letter-spacing:.3px;
+}
+.modal-note{font-size:12px;color:var(--text2);margin-bottom:20px;display:flex;align-items:center;gap:6px;}
+.modal-btn{
+  width:100%;background:var(--teal);color:#07070C;border:none;
+  padding:14px;border-radius:12px;
+  font-family:'DM Sans',sans-serif;font-weight:800;font-size:15px;
+  cursor:pointer;transition:all .2s;margin-bottom:10px;
+}
+.modal-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,200,150,.3);}
+.modal-btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+.modal-back{
+  width:100%;background:transparent;color:var(--text2);border:none;
+  padding:10px;border-radius:12px;
+  font-family:'DM Sans',sans-serif;font-weight:500;font-size:14px;
+  cursor:pointer;transition:all .18s;
+}
+.modal-back:hover{color:var(--text);}
+.inp-field{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;color:var(--text);
+  font-family:'DM Sans',monospace;font-size:14px;
+  outline:none;transition:all .2s;margin-bottom:12px;
+}
+.inp-field:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,200,150,.09);}
+.inp-field::placeholder{color:var(--text3);font-family:'DM Sans',sans-serif;}
+.verify-row{display:flex;gap:8px;margin-bottom:12px;}
+.verify-btn{
+  background:var(--surface3);border:1px solid var(--border2);
+  border-radius:10px;padding:0 16px;
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;
+  color:var(--text);cursor:pointer;transition:all .18s;white-space:nowrap;
+}
+.verify-btn:hover{border-color:var(--teal);color:var(--teal);}
+.verify-ok{font-size:12px;color:var(--teal);font-weight:600;display:none;align-items:center;gap:4px;margin-bottom:12px;}
+.verify-ok.show{display:flex;}
+.summary-box{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:14px 16px;margin-bottom:18px;
+}
+.summary-row{display:flex;justify-content:space-between;padding:4px 0;font-size:14px;}
+.summary-row.total{font-weight:700;border-top:1px solid var(--border);margin-top:6px;padding-top:10px;}
+/* Step 3 success */
+.success-check-wrap{text-align:center;padding:8px 0 20px;}
+.check-circle{
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(0,200,150,.1);
+  border:2px solid rgba(0,200,150,.25);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;font-size:32px;
+  animation:checkPop .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes checkPop{from{transform:scale(0);}to{transform:scale(1);}}
+.txn-id-box{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:10px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  margin:14px 0;
+}
+.txn-id-val{font-family:'DM Mono',monospace;font-size:13px;color:var(--text2);}
+.copy-btn{
+  background:none;border:none;color:var(--text3);cursor:pointer;
+  font-size:14px;transition:color .18s;padding:0;
+}
+.copy-btn:hover{color:var(--teal);}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mobile-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:60;
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:8px 0 12px;
+}
+.mobile-nav-inner{display:flex;justify-content:space-around;}
+.mnav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-size:10px;font-weight:600;color:var(--text3);
+  cursor:pointer;padding:4px 12px;border-radius:10px;
+  transition:all .18s;border:none;background:none;font-family:'DM Sans',sans-serif;
+}
+.mnav-item.active{color:var(--teal);}
+.mnav-icon{font-size:20px;}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;top:16px;right:16px;z-index:9999;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:13px;padding:13px 18px;
+  font-size:14px;font-weight:500;
+  display:flex;align-items:center;gap:9px;
+  box-shadow:0 10px 36px rgba(0,0,0,.5);
+  transform:translateX(160%);transition:transform .32s cubic-bezier(.22,1,.36,1);
+  max-width:310px;
+}
+#toast.show{transform:translateX(0);}
+#toast.success{border-left:3px solid var(--teal);}
+#toast.error{border-left:3px solid var(--danger);}
+#toast.info{border-left:3px solid var(--confirmed);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .bottom-grid{grid-template-columns:1fr;}
+}
+@media(max-width:700px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);box-shadow:0 0 40px rgba(0,0,0,.7);}
+  .main-wrap{margin-left:0;}
+  .hamburger{display:flex;}
+  .mobile-nav{display:block;}
+  .dash-content{padding:18px 16px 90px;}
+  .topbar{padding:0 16px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .wallet-amount{font-size:36px;}
+  .topbar-search{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     SIDEBAR
+══════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo" onclick="closeNav()">
+    <div class="logo-icon">💸</div>
+    InstaSeller
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+
+    <button class="nav-item active" onclick="navigate('home')">
+      <span class="ni-icon">🏠</span> Home
+    </button>
+    <button class="nav-item" onclick="navigate('marketplace')">
+      <span class="ni-icon">🏪</span> Browse Brands
+    </button>
+
+    <div class="nav-section-label">My Money</div>
+
+    <button class="nav-item" onclick="navigate('cashback')">
+      <span class="ni-icon">💰</span> My Cashback
+      <span class="nav-badge">4</span>
+    </button>
+    <button class="nav-item" onclick="navigate('wallet')">
+      <span class="ni-icon">👛</span> Wallet
+      <span class="nav-badge nav-badge-teal">₹780</span>
+    </button>
+
+    <div class="nav-section-label">Grow</div>
+
+    <button class="nav-item" onclick="navigate('referrals')">
+      <span class="ni-icon">👥</span> Referrals
+    </button>
+
+    <div class="nav-section-label">Account</div>
+
+    <button class="nav-item" onclick="navigate('kyc')" style="color:var(--pending);">
+      <span class="ni-icon">🪪</span> KYC Verify
+      <span class="nav-badge" style="background:rgba(245,158,11,.15);color:var(--pending);">!</span>
+    </button>
+    <button class="nav-item" onclick="navigate('profile')">
+      <span class="ni-icon">👤</span> Profile
+    </button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="user-pill" onclick="navigate('profile')">
+      <div class="user-avatar">R</div>
+      <div class="user-info">
+        <div class="user-name">Rahul Sharma</div>
+        <span class="tier-badge">🥇 Gold Member</span>
+      </div>
+      <div class="user-chevron">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 10L9 7L5 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════ -->
+<div class="main-wrap">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5H17M3 10H17M3 15H17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <div class="topbar-greeting">
+        Good morning, <span>Rahul</span> 👋
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-search" onclick="">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M10 10L12.5 12.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Search brands...
+      </div>
+      <div class="notif-btn" onclick="toggleNotif()">
+        🔔
+        <div class="notif-dot"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- NOTIFICATION PANEL -->
+  <div class="notif-panel" id="notif-panel">
+    <div class="notif-head">
+      <div class="notif-head-title">Notifications</div>
+      <div class="notif-mark-read" onclick="markAllRead()">Mark all read</div>
+    </div>
+    <div class="notif-item unread">
+      <div class="notif-dot-ind"></div>
+      <div>
+        <div class="notif-text">💰 ₹340 cashback from <strong>Myntra</strong> is now <strong style="color:var(--pending);">Pending</strong> confirmation.</div>
+        <div class="notif-time">2 hours ago</div>
+      </div>
+    </div>
+    <div class="notif-item unread">
+      <div class="notif-dot-ind"></div>
+      <div>
+        <div class="notif-text">✅ Your ₹127 cashback from <strong>Amazon</strong> has been <strong style="color:var(--confirmed);">Confirmed</strong>.</div>
+        <div class="notif-time">Yesterday, 4:30 PM</div>
+      </div>
+    </div>
+    <div class="notif-item unread">
+      <div class="notif-dot-ind"></div>
+      <div>
+        <div class="notif-text">🪪 Complete KYC to unlock withdrawals — takes only 2 minutes.</div>
+        <div class="notif-time">2 days ago</div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-dot-ind read"></div>
+      <div>
+        <div class="notif-text">🎁 <strong>Nykaa</strong> just increased their cashback to <strong style="color:var(--teal);">10%</strong> — valid till 31 May.</div>
+        <div class="notif-time">3 days ago</div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-dot-ind read"></div>
+      <div>
+        <div class="notif-text">💸 ₹80 from <strong>Swiggy</strong> has been <strong style="color:var(--teal);">Credited</strong> to your wallet.</div>
+        <div class="notif-time">22 May</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN DASH CONTENT -->
+  <main class="dash-content">
+
+    <!-- KYC WARNING BANNER -->
+    <div class="kyc-banner" onclick="navigate('kyc')">
+      <span class="kyc-icon">⚠️</span>
+      <div class="kyc-text">
+        <strong>KYC verification pending.</strong>
+        <span> Complete it to unlock withdrawals — takes just 2 minutes.</span>
+      </div>
+      <div class="kyc-cta">
+        Verify Now
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7H11M8 4L11 7L8 10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <!-- WALLET CARD -->
+    <div class="wallet-card">
+      <div class="wallet-inner">
+        <div class="wallet-top-row">
+          <div class="wallet-label">Total Wallet Balance</div>
+          <button class="wallet-context-menu" title="Options">⋯</button>
+        </div>
+        <div class="wallet-amount" id="wallet-amount">₹0.00</div>
+        <div class="wallet-chips-row">
+          <div class="wallet-chip">
+            <div class="wallet-chip-label">🕐 Pending</div>
+            <div class="wallet-chip-val" id="chip-pending">₹0</div>
+          </div>
+          <div class="wallet-chip">
+            <div class="wallet-chip-label">✓ Confirmed</div>
+            <div class="wallet-chip-val" id="chip-confirmed">₹0</div>
+          </div>
+          <div class="wallet-chip">
+            <div class="wallet-chip-label">💸 Available</div>
+            <div class="wallet-chip-val" id="chip-available">₹0</div>
+          </div>
+        </div>
+        <div class="wallet-btns">
+          <button class="w-btn-solid" onclick="openWithdrawModal()">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2V10M4 7.5L7.5 11L11 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Withdraw ₹780
+          </button>
+          <button class="w-btn-outline" onclick="navigate('wallet')">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 5H13M2 5V12H13V5M2 5L4 2H11L13 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            View History
+          </button>
+        </div>
+        <div class="wallet-progress-section">
+          <div class="wp-label-row">
+            <span class="wp-label">🥇 Gold · ₹260 more to reach Platinum</span>
+            <span class="wp-tier">74% there</span>
+          </div>
+          <div class="wp-bar-track">
+            <div class="wp-bar-fill" id="wp-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(0,200,150,.1);">💸</div>
+        <div class="stat-label">Total Earned</div>
+        <div class="stat-value" id="stat-earned">₹0</div>
+        <div class="stat-sub"><span class="stat-up">↑ ₹682</span> this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(91,91,214,.1);">🛍️</div>
+        <div class="stat-label">Brands Shopped</div>
+        <div class="stat-value">23</div>
+        <div class="stat-sub"><span class="stat-up">+3</span> this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(245,158,11,.1);">📅</div>
+        <div class="stat-label">This Month</div>
+        <div class="stat-value" id="stat-month">₹0</div>
+        <div class="stat-sub">Across 4 orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(239,68,68,.1);">👥</div>
+        <div class="stat-label">Referrals</div>
+        <div class="stat-value">7</div>
+        <div class="stat-sub"><span class="stat-up">+₹350</span> earned</div>
+      </div>
+    </div>
+
+    <!-- CASHBACK FLOW INFO -->
+    <div class="flow-chip">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 5V7.5L9 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span style="font-weight:600;">Cashback flow:</span>
+      <span style="color:var(--pending);">⏳ Pending</span>
+      <span class="flow-arrow">→</span>
+      <span style="color:var(--confirmed);">✓ Confirmed by brand (~30 days)</span>
+      <span class="flow-arrow">→</span>
+      <span style="color:var(--teal);">💸 Credited to wallet</span>
+    </div>
+
+    <!-- RECENT ACTIVITY TABLE -->
+    <div class="section-wrap" style="margin-bottom:22px;">
+      <div class="section-head-row">
+        <div class="section-head-title">Recent Activity</div>
+        <div class="view-all-link" onclick="navigate('cashback')">
+          View All
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7H11M8 4L11 7L8 10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <table class="act-table">
+        <thead>
+          <tr>
+            <th>Brand</th>
+            <th>Order Details</th>
+            <th>Date</th>
+            <th>Cashback</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="navigate('txn-detail')">
+            <td>
+              <div class="td-brand-cell">
+                <div class="brand-icon" style="background:#FFE4EE;color:#FF3F6C;">M</div>
+                <div class="brand-cell-info">
+                  <div class="brand-cell-name">Myntra</div>
+                  <div class="brand-cell-sub">Fashion · 8% rate</div>
+                </div>
+              </div>
+            </td>
+            <td style="font-size:13px;color:var(--text2);">Order #MYN2847 · ₹4,250 purchase</td>
+            <td class="td-date">14 May 2026</td>
+            <td class="td-amount pend">+₹340</td>
+            <td><span class="pill pill-pending">⏳ Pending</span></td>
+          </tr>
+          <tr onclick="navigate('txn-detail')">
+            <td>
+              <div class="td-brand-cell">
+                <div class="brand-icon" style="background:#FFF3E0;color:#E65100;">A</div>
+                <div class="brand-cell-info">
+                  <div class="brand-cell-name">Amazon</div>
+                  <div class="brand-cell-sub">Electronics · 5% rate</div>
+                </div>
+              </div>
+            </td>
+            <td style="font-size:13px;color:var(--text2);">Order #AMZ1923 · ₹2,540 purchase</td>
+            <td class="td-date">8 May 2026</td>
+            <td class="td-amount" style="color:var(--confirmed);">+₹127</td>
+            <td><span class="pill pill-confirmed">✓ Confirmed</span></td>
+          </tr>
+          <tr onclick="navigate('txn-detail')">
+            <td>
+              <div class="td-brand-cell">
+                <div class="brand-icon" style="background:#FFF0E0;color:#FC8019;">S</div>
+                <div class="brand-cell-info">
+                  <div class="brand-cell-name">Swiggy</div>
+                  <div class="brand-cell-sub">Food · Flat rate</div>
+                </div>
+              </div>
+            </td>
+            <td style="font-size:13px;color:var(--text2);">Order #SWG0041 · ₹680 purchase</td>
+            <td class="td-date">2 May 2026</td>
+            <td class="td-amount pos">+₹80</td>
+            <td><span class="pill pill-credited">₹ Credited</span></td>
+          </tr>
+          <tr onclick="navigate('txn-detail')">
+            <td>
+              <div class="td-brand-cell">
+                <div class="brand-icon" style="background:#FCE4EC;color:#C2185B;">N</div>
+                <div class="brand-cell-info">
+                  <div class="brand-cell-name">Nykaa</div>
+                  <div class="brand-cell-sub">Beauty · 10% rate</div>
+                </div>
+              </div>
+            </td>
+            <td style="font-size:13px;color:var(--text2);">Order #NYK3820 · ₹2,150 purchase</td>
+            <td class="td-date">28 Apr 2026</td>
+            <td class="td-amount pos">+₹215</td>
+            <td><span class="pill pill-credited">₹ Credited</span></td>
+          </tr>
+          <tr onclick="navigate('txn-detail')">
+            <td>
+              <div class="td-brand-cell">
+                <div class="brand-icon" style="background:#E3F2FD;color:#1565C0;">F</div>
+                <div class="brand-cell-info">
+                  <div class="brand-cell-name">Flipkart</div>
+                  <div class="brand-cell-sub">Electronics · 6% rate</div>
+                </div>
+              </div>
+            </td>
+            <td style="font-size:13px;color:var(--text2);">Order #FLK9281 · ₹3,000 purchase</td>
+            <td class="td-date">20 Apr 2026</td>
+            <td class="td-amount pos">+₹180</td>
+            <td><span class="pill pill-credited">₹ Credited</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- BOTTOM TWO-COL -->
+    <div class="bottom-grid">
+
+      <!-- QUICK ACTIONS -->
+      <div class="quick-actions">
+        <div class="section-head-title">Quick Actions</div>
+        <div class="qa-grid">
+          <div class="qa-btn" onclick="navigate('marketplace')">
+            <div class="qa-icon">🛍️</div>
+            <div class="qa-label">Browse Deals</div>
+          </div>
+          <div class="qa-btn" onclick="openWithdrawModal()">
+            <div class="qa-icon">💸</div>
+            <div class="qa-label">Withdraw</div>
+          </div>
+          <div class="qa-btn" onclick="navigate('referrals')">
+            <div class="qa-icon">👥</div>
+            <div class="qa-label">Refer Friends</div>
+          </div>
+          <div class="qa-btn" onclick="navigate('kyc')">
+            <div class="qa-icon">🪪</div>
+            <div class="qa-label">Complete KYC</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOP CASHBACK TODAY -->
+      <div class="top-cb-section">
+        <div class="section-head-row">
+          <div class="section-head-title">Top Cashback Today</div>
+          <div class="view-all-link" onclick="navigate('marketplace')">
+            All deals →
+          </div>
+        </div>
+        <div class="top-cb-scroll">
+          <div class="cb-mini-card">
+            <div class="cb-mini-logo" style="background:#FFE4EE;color:#FF3F6C;">M</div>
+            <div class="cb-mini-brand">Myntra</div>
+            <div class="cb-mini-rate">Up to 12% cashback</div>
+            <button class="cb-mini-btn" onclick="navigate('brand-detail')">Shop →</button>
+          </div>
+          <div class="cb-mini-card">
+            <div class="cb-mini-logo" style="background:#FCE4EC;color:#C2185B;">N</div>
+            <div class="cb-mini-brand">Nykaa</div>
+            <div class="cb-mini-rate">Up to 10% cashback</div>
+            <button class="cb-mini-btn" onclick="navigate('brand-detail')">Shop →</button>
+          </div>
+          <div class="cb-mini-card">
+            <div class="cb-mini-logo" style="background:#FF6B35;color:#fff;">A</div>
+            <div class="cb-mini-brand">Ajio</div>
+            <div class="cb-mini-rate">Up to 12% cashback</div>
+            <button class="cb-mini-btn" onclick="navigate('brand-detail')">Shop →</button>
+          </div>
+          <div class="cb-mini-card">
+            <div class="cb-mini-logo" style="background:#E3F2FD;color:#1565C0;">F</div>
+            <div class="cb-mini-brand">Flipkart</div>
+            <div class="cb-mini-rate">Up to 6% cashback</div>
+            <button class="cb-mini-btn" onclick="navigate('brand-detail')">Shop →</button>
+          </div>
+          <div class="cb-mini-card">
+            <div class="cb-mini-logo" style="background:#E8F5E9;color:#2E7D32;">B</div>
+            <div class="cb-mini-brand">BigBasket</div>
+            <div class="cb-mini-rate">Up to 4% cashback</div>
+            <button class="cb-mini-btn" onclick="navigate('brand-detail')">Shop →</button>
+          </div>
+          <div class="cb-mini-card">
+            <div class="cb-mini-logo" style="background:#FFF3E0;color:#E65100;">S</div>
+            <div class="cb-mini-brand">Swiggy</div>
+            <div class="cb-mini-rate">₹80 flat cashback</div>
+            <button class="cb-mini-btn" onclick="navigate('brand-detail')">Shop →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ WITHDRAWAL MODAL ══ -->
+<div class="modal-backdrop" id="withdraw-modal" onclick="closeModal(event)">
+  <div class="modal-box">
+
+    <!-- Step indicators -->
+    <div class="step-indicator" id="step-indicator">
+      <div class="step-dot active" id="sdot1"></div>
+      <div class="step-dot" id="sdot2"></div>
+      <div class="step-dot" id="sdot3"></div>
+    </div>
+
+    <!-- STEP 1: Choose method -->
+    <div id="wd-step1">
+      <div class="modal-title">Withdraw ₹780</div>
+      <div class="modal-sub">Choose your preferred payout method.</div>
+      <div class="method-cards">
+        <div class="method-card selected" id="mc-upi" onclick="selectMethod('upi')">
+          <div class="method-card-icon">📱</div>
+          <div class="method-card-info">
+            <div class="method-card-name">UPI Transfer <span class="method-rec">RECOMMENDED</span></div>
+            <div class="method-card-sub">Instant · Directly to any UPI ID</div>
+          </div>
+        </div>
+        <div class="method-card" id="mc-bank" onclick="selectMethod('bank')">
+          <div class="method-card-icon">🏦</div>
+          <div class="method-card-info">
+            <div class="method-card-name">Bank Transfer</div>
+            <div class="method-card-sub">2–3 business days · NEFT/IMPS</div>
+          </div>
+        </div>
+        <div class="method-card" id="mc-paytm" onclick="selectMethod('paytm')">
+          <div class="method-card-icon">💼</div>
+          <div class="method-card-info">
+            <div class="method-card-name">Paytm Wallet</div>
+            <div class="method-card-sub">Instant · To your Paytm balance</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-note">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 5V7.5M7 9.5V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Minimum withdrawal amount: ₹100 · KYC required for payouts
+      </div>
+      <button class="modal-btn" onclick="goStep(2)">Continue →</button>
+    </div>
+
+    <!-- STEP 2: Enter details -->
+    <div id="wd-step2" style="display:none;">
+      <div class="modal-title">Enter UPI Details</div>
+      <div class="modal-sub">We'll transfer your cashback instantly.</div>
+      <div class="verify-row">
+        <input class="inp-field" id="upi-input" placeholder="yourname@paytm" style="margin-bottom:0;flex:1;" oninput="resetVerify()">
+        <button class="verify-btn" onclick="verifyUPI()">Verify →</button>
+      </div>
+      <div class="verify-ok" id="verify-ok">✓ UPI ID verified successfully</div>
+      <input class="inp-field" id="amt-input" type="number" value="780" placeholder="Amount" min="100" max="780">
+      <div class="summary-box">
+        <div class="summary-row"><span style="color:var(--text2);">Available balance</span><span>₹780.00</span></div>
+        <div class="summary-row"><span style="color:var(--text2);">Processing fee</span><span style="color:var(--teal);">Free</span></div>
+        <div class="summary-row"><span style="color:var(--text2);">Transfer time</span><span>Instant</span></div>
+        <div class="summary-row total"><span>You will receive</span><span style="color:var(--teal);font-size:16px;">₹780.00</span></div>
+      </div>
+      <button class="modal-btn" id="confirm-btn" onclick="goStep(3)" style="opacity:.4;pointer-events:none;">Confirm Withdrawal</button>
+      <button class="modal-back" onclick="goStep(1)">← Back</button>
+    </div>
+
+    <!-- STEP 3: Success -->
+    <div id="wd-step3" style="display:none;">
+      <div class="success-check-wrap">
+        <div class="check-circle">✅</div>
+        <div style="font-size:20px;font-weight:800;margin-bottom:8px;">Withdrawal Initiated!</div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px;">
+          <strong style="color:var(--teal);">₹780</strong> is on its way to<br>
+          <strong id="upi-display">yourname@paytm</strong>
+        </div>
+        <div style="background:rgba(0,200,150,.07);border:1px solid rgba(0,200,150,.15);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--teal);margin-bottom:4px;">
+          ⏱ Expected: Today, within 2 hours
+        </div>
+      </div>
+      <div class="txn-id-box">
+        <span class="txn-id-val" id="txn-id-val">IS-WD-20260519-8472</span>
+        <button class="copy-btn" onclick="copyTxnId()">📋</button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);text-align:center;margin-bottom:16px;">Save this Transaction ID for your records.</div>
+      <button class="modal-btn" onclick="closeModalFinal()">Done — Back to Dashboard</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ MOBILE BOTTOM NAV ══ -->
+<div class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <button class="mnav-item active" onclick="navigate('home')"><span class="mnav-icon">🏠</span>Home</button>
+    <button class="mnav-item" onclick="navigate('marketplace')"><span class="mnav-icon">🏪</span>Brands</button>
+    <button class="mnav-item" onclick="navigate('cashback')"><span class="mnav-icon">💰</span>Cashback</button>
+    <button class="mnav-item" onclick="navigate('wallet')"><span class="mnav-icon">👛</span>Wallet</button>
+    <button class="mnav-item" onclick="navigate('profile')"><span class="mnav-icon">👤</span>Profile</button>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast"></div>
+
+<script>
+/* ── Navigation stub ── */
+function navigate(page){
+  const map={
+    'marketplace':'instaseller-page2-marketplace.html',
+    'brand-detail':'instaseller-page3-brand-detail.html',
+    'auth':'instaseller-page4-auth.html',
+    'cashback':'instaseller-page6-cashback.html',
+    'wallet':'instaseller-page7-wallet.html',
+    'referrals':'instaseller-page8-referrals.html',
+    'redirect':'instaseller-page9-redirect.html',
+    'kyc':'instaseller-page10-kyc.html',
+    'profile':'instaseller-page13-profile.html',
+    'txn-detail':'instaseller-page12-txn-detail.html',
+  };
+  if(map[page]) window.location.href=map[page];
+  else showToast('info','ℹ  '+page.charAt(0).toUpperCase()+page.slice(1)+' page coming soon!');
+  closeNav();
+}
+
+/* ── Sidebar toggle (mobile) ── */
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+}
+function closeNav(){
+  document.getElementById('sidebar').classList.remove('open');
+}
+document.addEventListener('click',e=>{
+  const sb=document.getElementById('sidebar');
+  if(sb.classList.contains('open') && !sb.contains(e.target) && !e.target.closest('.hamburger')){
+    sb.classList.remove('open');
+  }
+});
+
+/* ── Notification panel ── */
+function toggleNotif(){
+  document.getElementById('notif-panel').classList.toggle('show');
+}
+function markAllRead(){
+  document.querySelectorAll('.notif-dot-ind').forEach(d=>d.classList.add('read'));
+  document.querySelectorAll('.notif-item').forEach(i=>i.classList.remove('unread'));
+  document.querySelector('.notif-dot').style.display='none';
+  showToast('success','✓ All notifications marked as read.');
+}
+document.addEventListener('click',e=>{
+  const np=document.getElementById('notif-panel');
+  if(np.classList.contains('show') && !np.contains(e.target) && !e.target.closest('.notif-btn')){
+    np.classList.remove('show');
+  }
+});
+
+/* ── Count-up animation ── */
+function countUp(el, target, prefix='₹', suffix='', decimals=2, duration=1400){
+  const start=performance.now();
+  function update(now){
+    const p=Math.min((now-start)/duration,1);
+    const ease=1-Math.pow(1-p,3);
+    const val=target*ease;
+    el.textContent=prefix+(decimals?val.toFixed(decimals):Math.floor(val).toLocaleString('en-IN'))+suffix;
+    if(p<1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+/* ── Run animations on load ── */
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    countUp(document.getElementById('wallet-amount'), 1240.50, '₹', '', 2, 1600);
+    setTimeout(()=>{
+      document.getElementById('chip-pending').textContent='₹340';
+      document.getElementById('chip-confirmed').textContent='₹120';
+      document.getElementById('chip-available').textContent='₹780';
+    }, 800);
+    countUp(document.getElementById('stat-earned'), 4820, '₹', '', 0, 1400);
+    countUp(document.getElementById('stat-month'), 340, '₹', '', 0, 1200);
+    setTimeout(()=>{
+      document.getElementById('wp-fill').style.width='74%';
+    }, 300);
+  }, 200);
+});
+
+/* ── Withdrawal modal ── */
+let currentStep=1;
+let selectedMethod='upi';
+
+function openWithdrawModal(){
+  goStep(1);
+  document.getElementById('withdraw-modal').classList.add('show');
+}
+function closeModal(e){
+  if(e.target===document.getElementById('withdraw-modal')){
+    document.getElementById('withdraw-modal').classList.remove('show');
+  }
+}
+function closeModalFinal(){
+  document.getElementById('withdraw-modal').classList.remove('show');
+  document.querySelector('.wallet-amount').textContent='₹0.00';
+  document.getElementById('chip-available').textContent='₹0';
+  showToast('success','✓ Withdrawal of ₹780 initiated successfully!');
+}
+
+function goStep(step){
+  currentStep=step;
+  document.getElementById('wd-step1').style.display=step===1?'block':'none';
+  document.getElementById('wd-step2').style.display=step===2?'block':'none';
+  document.getElementById('wd-step3').style.display=step===3?'block':'none';
+  [1,2,3].forEach(i=>{
+    const d=document.getElementById('sdot'+i);
+    d.className='step-dot';
+    if(i<step) d.classList.add('done');
+    if(i===step) d.classList.add('active');
+  });
+  if(step===3){
+    const upi=document.getElementById('upi-input').value||'yourname@paytm';
+    document.getElementById('upi-display').textContent=upi;
+  }
+}
+
+function selectMethod(method){
+  selectedMethod=method;
+  ['upi','bank','paytm'].forEach(m=>{
+    document.getElementById('mc-'+m).classList.toggle('selected',m===method);
+  });
+}
+
+function verifyUPI(){
+  const upi=document.getElementById('upi-input').value.trim();
+  if(!upi){showToast('error','⚠ Please enter a UPI ID first.');return;}
+  const btn=document.querySelector('.verify-btn');
+  btn.textContent='Verifying...';
+  btn.style.opacity='.5';
+  setTimeout(()=>{
+    btn.textContent='✓ Verified';
+    btn.style.opacity='1';
+    btn.style.color='var(--teal)';
+    btn.style.borderColor='rgba(0,200,150,.3)';
+    document.getElementById('verify-ok').classList.add('show');
+    document.getElementById('confirm-btn').style.opacity='1';
+    document.getElementById('confirm-btn').style.pointerEvents='all';
+    showToast('success','✓ UPI ID verified!');
+  },1200);
+}
+function resetVerify(){
+  document.getElementById('verify-ok').classList.remove('show');
+  const btn=document.querySelector('.verify-btn');
+  btn.textContent='Verify →';
+  btn.style.color='';
+  btn.style.borderColor='';
+  document.getElementById('confirm-btn').style.opacity='.4';
+  document.getElementById('confirm-btn').style.pointerEvents='none';
+}
+
+function copyTxnId(){
+  const val=document.getElementById('txn-id-val').textContent;
+  navigator.clipboard.writeText(val).catch(()=>{});
+  showToast('success','✓ Transaction ID copied!');
+}
+
+/* ── Toast ── */
+function showToast(type,msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='';
+  void t.offsetWidth;
+  t.classList.add(type,'show');
+  clearTimeout(t._to);
+  t._to=setTimeout(()=>t.classList.remove('show'),4000);
+}
+</script>
+</body>
+</html>
